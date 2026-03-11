@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "lobster-watch",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["http-server", "-p", "8080", "-c-1"],
+      "port": 8080
+    },
+    {
+      "name": "lobster-watch-live",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server.js"],
+      "port": 3000
+    },
+    {
+      "name": "landing",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["http-server", "/Users/xiaoyanghu/Downloads/lobster-watch-landing", "-p", "8090", "-c-1"],
+      "port": 8090
+    }
+  ]
+}
