@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lobster Watch - AI Agent Oversight Dashboard</title>
+<meta name="description" content="A calm, transparent dashboard for monitoring autonomous AI agents. Built with a Stardew Valley-inspired pixel art aesthetic.">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=DM+Sans:opsz@9..40&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<style>
+  :root {
+    --ocean: #1a3a4a;
+    --ocean-mid: #2a5570;
+    --ocean-light: #3a7a9c;
+    --sand: #f5e6c8;
+    --sand-light: #fdf6ec;
+    --coral: #e8724a;
+    --coral-light: #f5a882;
+    --seafoam: #4ab8a0;
+    --seafoam-light: #a8ddd4;
+    --amber: #f0a830;
+    --amber-light: #fde9b8;
+    --red: #d94f3d;
+    --gray: #8a9aaa;
+    --white: #fdf6ec;
+    --dark: #1a2a35;
+    --pixel-border: 2px solid var(--ocean);
+    --card-shadow: 3px 3px 0px var(--ocean);
+    --card-shadow-sm: 2px 2px 0px var(--ocean);
+    --pixel-clip: polygon(
+      0 4px, 4px 4px, 4px 0,
+      calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
+      100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%,
+      4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px)
+    );
+    --pixel-clip-sm: polygon(
+      0 3px, 3px 3px, 3px 0,
+      calc(100% - 3px) 0, calc(100% - 3px) 3px, 100% 3px,
+      100% calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%,
+      3px 100%, 3px calc(100% - 3px), 0 calc(100% - 3px)
+    );
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: #0f172a; scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #0f172a;
+    color: var(--sand-light);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ─── TYPOGRAPHY ─────────────────────────────────────────── */
+  h1, h2, h3, h4 {
+    font-family: 'Pixelify Sans', monospace;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .section-label {
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--coral);
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-size: 40px;
+    color: var(--sand);
+    margin-bottom: 20px;
+  }
+
+  .section-desc {
+    font-size: 17px;
+    color: var(--gray);
+    max-width: 600px;
+    line-height: 1.7;
+  }
+
+  /* ─── LAYOUT ─────────────────────────────────────────────── */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  section {
+    padding: 100px 0;
+    position: relative;
+  }
+
+  /* ─── PIXEL BUTTON ───────────────────────────────────────── */
+  .btn {
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 12px 28px;
+    border: 2px solid var(--ocean);
+    clip-path: var(--pixel-clip-sm);
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 var(--ocean) !important;
+  }
+  .btn-primary {
+    background: var(--coral);
+    color: #fff;
+    box-shadow: 3px 3px 0 #b85a38;
+  }
+  .btn-primary:hover {
+    background: #d4653f;
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--sand);
+    border-color: rgba(245, 230, 200, 0.3);
+    box-shadow: 3px 3px 0 rgba(26, 58, 74, 0.5);
+  }
+  .btn-ghost:hover {
+    border-color: var(--sand);
+    background: rgba(245, 230, 200, 0.05);
+  }
+
+  /* ─── NAVIGATION ─────────────────────────────────────────── */
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(12px);
+    border-bottom: 2px solid rgba(245, 230, 200, 0.08);
+    transition: background 0.3s;
+  }
+  .nav-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 40px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--sand);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+  .nav-logo img {
+    height: 28px;
+    width: auto;
+  }
+  .nav-logo span {
+    font-size: 22px;
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 14px;
+    color: var(--gray);
+    text-decoration: none;
+    transition: color 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .nav-links a:hover {
+    color: var(--sand);
+  }
+  .nav-cta,
+  .nav-links a.nav-cta {
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 20px;
+    background: var(--coral);
+    color: #fff;
+    border: 2px solid #b85a38;
+    clip-path: var(--pixel-clip-sm);
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.1s;
+  }
+  .nav-cta:hover,
+  .nav-links a.nav-cta:hover { background: #d4653f; color: #fff; }
+  .nav-cta:active { transform: translate(1px, 1px); }
+
+  .nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+  }
+  .nav-toggle svg { display: block; }
+
+  /* ─── HERO ───────────────────────────────────────────────── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding-top: 64px;
+  }
+  .hero-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.25;
+    pointer-events: none;
+  }
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(15,23,42,0.7) 0%, rgba(15,23,42,0.4) 40%, rgba(15,23,42,0.85) 100%);
+  }
+  .hero-sign {
+    width: 200px;
+    margin: 0 auto 32px;
+    display: block;
+    filter: drop-shadow(4px 4px 0 rgba(0,0,0,0.4));
+    transform-origin: top center;
+    animation: gentle-swing 6s ease-in-out infinite;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 740px;
+    padding: 0 24px;
+  }
+  .hero-badge {
+    display: inline-block;
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--coral);
+    background: rgba(232, 114, 74, 0.12);
+    border: 1px solid rgba(232, 114, 74, 0.25);
+    padding: 6px 16px;
+    clip-path: var(--pixel-clip-sm);
+    margin-bottom: 28px;
+  }
+  .hero h1 {
+    font-size: 56px;
+    color: var(--sand);
+    margin-bottom: 20px;
+    text-shadow: 3px 3px 0 rgba(0,0,0,0.4);
+  }
+  .hero-sub {
+    font-size: 18px;
+    color: var(--gray);
+    line-height: 1.7;
+    margin-bottom: 40px;
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* ─── PROBLEM SECTION ────────────────────────────────────── */
+  .problems {
+    background: #0b1120;
+  }
+  .problems-header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .problems-header .section-desc {
+    margin: 0 auto;
+  }
+  .problem-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .problem-card {
+    background: linear-gradient(180deg, #2a1810 0%, #1e1208 100%);
+    border: 3px solid #5a3a15;
+    clip-path: var(--pixel-clip);
+    padding: 24px 22px 22px;
+    position: relative;
+    box-shadow: 0 3px 0 #0a0604, 3px 5px 10px rgba(0,0,0,0.5);
+    transition: transform 0.2s;
+  }
+  .problem-card:hover {
+    transform: translateY(-3px);
+  }
+  .problem-card h3 {
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--sand);
+    margin-bottom: 10px;
+  }
+  .problem-card p {
+    font-size: 13px;
+    color: #a08870;
+    line-height: 1.6;
+  }
+
+  /* ─── FEATURES ───────────────────────────────────────────── */
+  .features-header {
+    text-align: center;
+    margin-bottom: 80px;
+  }
+  .features-header .section-desc {
+    margin: 0 auto;
+  }
+
+  .feature-row {
+    display: flex;
+    align-items: center;
+    gap: 64px;
+    margin-bottom: 80px;
+  }
+  .feature-row:last-child { margin-bottom: 0; }
+  .feature-row.reverse { flex-direction: row-reverse; }
+
+  .feature-visual {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .feature-text {
+    flex: 1;
+  }
+  .feature-text .section-label { margin-bottom: 8px; }
+  .feature-text h3 {
+    font-size: 28px;
+    color: var(--sand);
+    margin-bottom: 16px;
+  }
+  .feature-text p {
+    font-size: 15px;
+    color: var(--gray);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+  .feature-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .feature-tag {
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    clip-path: var(--pixel-clip-sm);
+    border: 1px solid;
+  }
+  .tag-ocean { background: rgba(26,58,74,0.3); border-color: var(--ocean-mid); color: var(--ocean-light); }
+  .tag-coral { background: rgba(232,114,74,0.12); border-color: rgba(232,114,74,0.3); color: var(--coral); }
+  .tag-seafoam { background: rgba(74,184,160,0.12); border-color: rgba(74,184,160,0.3); color: var(--seafoam); }
+  .tag-amber { background: rgba(240,168,48,0.12); border-color: rgba(240,168,48,0.3); color: var(--amber); }
+
+  /* ─── MOCK UI CARDS (feature visuals) ────────────────────── */
+  .mock-phone {
+    width: 280px;
+    background: #0f172a;
+    border: 3px solid var(--ocean);
+    box-shadow: 6px 6px 0 rgba(26, 58, 74, 0.6);
+    clip-path: var(--pixel-clip);
+    padding: 12px;
+    position: relative;
+  }
+  .mock-phone-notch {
+    width: 80px;
+    height: 6px;
+    background: var(--ocean);
+    clip-path: var(--pixel-clip-sm);
+    margin: 0 auto 12px;
+  }
+  .mock-card {
+    background: rgba(15, 23, 42, 0.95);
+    border: 2px solid rgba(245, 230, 200, 0.1);
+    clip-path: var(--pixel-clip-sm);
+    padding: 14px;
+    margin-bottom: 8px;
+  }
+  .mock-card:last-child { margin-bottom: 0; }
+  .mock-title {
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 12px;
+    color: var(--sand);
+    margin-bottom: 8px;
+  }
+  .mock-stat-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .mock-stat {
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    clip-path: var(--pixel-clip-sm);
+    border: 1px solid;
+  }
+  .mock-bar {
+    height: 6px;
+    clip-path: var(--pixel-clip-sm);
+    margin-top: 8px;
+  }
+  .mock-bar-fill {
+    height: 100%;
+    clip-path: var(--pixel-clip-sm);
+    transition: width 1s steps(12);
+  }
+  .mock-timeline-dot {
+    width: 8px;
+    height: 8px;
+    clip-path: var(--pixel-clip-sm);
+    display: inline-block;
+    margin-right: 6px;
+  }
+  .mock-timeline-row {
+    display: flex;
+    align-items: center;
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 10px;
+    color: var(--gray);
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(245, 230, 200, 0.05);
+  }
+  .mock-timeline-row:last-child { border-bottom: none; }
+  .mock-memory-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(245, 230, 200, 0.05);
+  }
+  .mock-memory-item:last-child { border-bottom: none; }
+  .mock-memory-dot {
+    width: 6px;
+    height: 6px;
+    clip-path: var(--pixel-clip-sm);
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+  .mock-memory-text {
+    font-size: 10px;
+    color: var(--gray);
+    line-height: 1.4;
+  }
+  .mock-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(245, 230, 200, 0.05);
+  }
+  .mock-toggle-row:last-child { border-bottom: none; }
+  .mock-toggle-label {
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 10px;
+    color: var(--sand-light);
+  }
+  .mock-toggle-badge {
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 9px;
+    padding: 2px 6px;
+    clip-path: var(--pixel-clip-sm);
+  }
+  .mock-approval-card {
+    border: 2px solid rgba(240,168,48,0.3);
+    clip-path: var(--pixel-clip-sm);
+    padding: 12px;
+    background: rgba(240,168,48,0.05);
+    margin-bottom: 8px;
+  }
+  .mock-approval-card:last-child { margin-bottom: 0; }
+  .mock-approval-header {
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 11px;
+    color: var(--amber);
+    margin-bottom: 6px;
+  }
+  .mock-approval-body {
+    font-size: 10px;
+    color: var(--gray);
+    margin-bottom: 8px;
+  }
+  .mock-approval-actions {
+    display: flex;
+    gap: 6px;
+  }
+  .mock-btn {
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 9px;
+    padding: 3px 10px;
+    clip-path: var(--pixel-clip-sm);
+    border: 1px solid;
+  }
+
+  /* ─── DESIGN VISION ───────────────────────────────────────── */
+  .design-vision {
+    background: #0b1120;
+  }
+  .design-vision-header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .design-vision-header .section-desc {
+    margin: 0 auto;
+  }
+  .vision-section {
+    background: #0b1120;
+  }
+  .vision-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .vision-card {
+    background: linear-gradient(180deg, #1a2a35 0%, #15202a 100%);
+    border: 4px solid var(--ocean);
+    clip-path: var(--pixel-clip);
+    padding: 28px 24px;
+    position: relative;
+    box-shadow: 8px 8px 0px var(--ocean-mid);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+  }
+  .vision-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 12px 12px 0px var(--ocean-mid);
+  }
+  .vision-card-icon {
+    font-size: 52px;
+    margin-bottom: 16px;
+    line-height: 1;
+  }
+  .vision-card-icon span {
+    display: inline-block;
+    filter: contrast(1.2) drop-shadow(2px 2px 0px rgba(0,0,0,0.2));
+  }
+  .vision-card h3 {
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--sand);
+    margin-bottom: 12px;
+    line-height: 1.3;
+    text-transform: uppercase;
+  }
+  .vision-card-hook {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--gray);
+    line-height: 1.6;
+    margin-bottom: 18px;
+  }
+  .vision-card-deep {
+    width: 100%;
+    text-align: left;
+    margin-top: 6px;
+  }
+  .vision-toggle {
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 12px;
+    color: var(--coral);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .vision-toggle:hover { opacity: 0.9; }
+  .vision-card-deep-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+  .vision-card-deep.expanded .vision-card-deep-content {
+    max-height: 420px;
+  }
+  .vision-card-deep-content-inner {
+    margin-top: 14px;
+    padding: 16px;
+    background: linear-gradient(180deg, #0f1a22 0%, #0a1218 100%);
+    border: 2px dashed rgba(245, 230, 200, 0.2);
+    clip-path: var(--pixel-clip-sm);
+  }
+  .vision-card-deep-content-inner p {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: #a08870;
+    line-height: 1.6;
+    margin: 0;
+  }
+  .vision-card-deep-content .highlight {
+    color: var(--coral-light);
+    font-weight: 600;
+  }
+
+  /* ─── THE HORIZON (Coming Soon) ───────────────────────────── */
+  .horizon {
+    background: #0b1120;
+  }
+  .horizon-header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .horizon-header .section-desc {
+    margin: 0 auto;
+  }
+  .horizon-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  .horizon-card {
+    background: linear-gradient(180deg, #1a2a35 0%, #15202a 100%);
+    border: 3px solid var(--ocean-mid);
+    clip-path: var(--pixel-clip);
+    padding: 24px 20px;
+    position: relative;
+    box-shadow: 0 3px 0 #0a0f14, 3px 5px 10px rgba(0,0,0,0.4);
+    transition: transform 0.2s;
+  }
+  .horizon-card:hover {
+    transform: translateY(-3px);
+  }
+  .horizon-card h4 {
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--sand);
+    margin-bottom: 10px;
+  }
+  .horizon-card p {
+    font-size: 13px;
+    color: #a08870;
+    line-height: 1.6;
+  }
+
+  /* ─── PHILOSOPHY ─────────────────────────────────────────── */
+  .philosophy {
+    background: #0b1120;
+  }
+  .philosophy-header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .philosophy-header .section-desc {
+    margin: 0 auto;
+  }
+  .principle-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+  }
+  .principle-card {
+    background: linear-gradient(180deg, #1a2a35 0%, #15202a 100%);
+    border: 4px solid var(--ocean);
+    clip-path: var(--pixel-clip);
+    padding: 24px 18px;
+    text-align: center;
+    position: relative;
+    box-shadow: 8px 8px 0px var(--ocean-mid);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+  .principle-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 12px 12px 0px var(--ocean-mid);
+  }
+  .principle-icon {
+    font-size: 32px;
+    margin-bottom: 14px;
+    line-height: 1;
+  }
+  .principle-icon span {
+    display: inline-block;
+    filter: contrast(1.2) drop-shadow(2px 2px 0px rgba(0,0,0,0.2));
+  }
+  .principle-card h4 {
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--sand);
+    margin-bottom: 10px;
+    line-height: 1.3;
+    text-transform: uppercase;
+  }
+  .principle-card p {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: #a08870;
+    line-height: 1.6;
+  }
+
+  /* ─── DEMO SECTION ───────────────────────────────────────── */
+  .demo {
+    background: #0b1120;
+  }
+  .demo-header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .demo-header .section-desc {
+    margin: 0 auto;
+  }
+  .demo-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+  }
+  .demo-frame {
+    width: min(312px, 85vw);
+    height: min(576px, 75vh);
+    border: 3px solid var(--ocean);
+    box-shadow: 8px 8px 0 rgba(26, 58, 74, 0.5);
+    clip-path: var(--pixel-clip);
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #0f172a;
+  }
+  .demo-frame iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  .demo-hints {
+    max-width: 280px;
+    padding-top: 0;
+  }
+  .demo-hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .demo-hint-num {
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 14px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(232, 114, 74, 0.12);
+    border: 2px solid rgba(232, 114, 74, 0.3);
+    color: var(--coral);
+    clip-path: var(--pixel-clip-sm);
+    flex-shrink: 0;
+  }
+  .demo-hint p {
+    font-size: 14px;
+    color: var(--gray);
+    line-height: 1.5;
+  }
+  .demo-hint strong {
+    color: var(--sand);
+  }
+
+  /* ─── FOOTER ─────────────────────────────────────────────── */
+  .footer {
+    padding: 80px 0 48px;
+    text-align: center;
+  }
+  .footer h2 {
+    font-size: 36px;
+    color: var(--sand);
+    margin-bottom: 20px;
+  }
+  .footer p {
+    color: var(--gray);
+    margin-bottom: 32px;
+    font-size: 16px;
+  }
+  .footer-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+  }
+  .footer-divider {
+    width: 80px;
+    height: 3px;
+    background: var(--ocean);
+    margin: 0 auto 24px;
+  }
+  .footer-game {
+    display: inline-block;
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 12px;
+    color: rgba(138, 154, 170, 0.6);
+    padding: 12px 24px;
+    border: 3px solid var(--ocean-mid);
+    clip-path: var(--pixel-clip-sm);
+    background: linear-gradient(180deg, #1a2a35 0%, #15202a 100%);
+    box-shadow: 4px 4px 0px var(--ocean-mid);
+  }
+  .footer-game span { color: var(--coral); }
+
+  /* ─── ANIMATIONS ─────────────────────────────────────────── */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes gentle-swing {
+    0% { transform: rotate(-1.5deg); }
+    50% { transform: rotate(1.5deg); }
+    100% { transform: rotate(-1.5deg); }
+  }
+  @keyframes rpgBlink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .anim { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .anim.visible { opacity: 1; transform: translateY(0); }
+  .anim-delay-1 { transition-delay: 0.1s; }
+  .anim-delay-2 { transition-delay: 0.2s; }
+  .anim-delay-3 { transition-delay: 0.3s; }
+  .anim-delay-4 { transition-delay: 0.4s; }
+
+  .hero-content { animation: fadeInUp 0.8s ease forwards; }
+
+  /* ─── RESPONSIVE ─────────────────────────────────────────── */
+  @media (max-width: 1024px) {
+    .container { padding: 0 32px; }
+    .hero h1 { font-size: 44px; }
+    .section-title { font-size: 32px; }
+    .principle-grid { grid-template-columns: repeat(3, 1fr); }
+    .feature-row { gap: 40px; }
+    .horizon-grid { grid-template-columns: repeat(2, 1fr); }
+    .vision-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 768px) {
+    .container { padding: 0 20px; }
+    .hero h1 { font-size: 34px; }
+    .section-title { font-size: 28px; }
+    .feature-row, .feature-row.reverse { flex-direction: column; gap: 32px; }
+    .problem-grid { grid-template-columns: 1fr; }
+    .principle-grid { grid-template-columns: repeat(2, 1fr); }
+    .horizon-grid { grid-template-columns: 1fr; }
+    .vision-grid { grid-template-columns: 1fr; }
+    .vision-card { padding: 28px 24px; }
+    .nav-links { display: none; }
+    .nav-links.open {
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      top: 64px;
+      left: 0;
+      right: 0;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      padding: 20px 40px;
+      gap: 16px;
+      border-bottom: 2px solid rgba(245, 230, 200, 0.08);
+    }
+    .nav-toggle { display: block; }
+    .demo-wrapper { flex-direction: column; align-items: center; }
+    .demo-frame { width: 100%; max-width: 312px; height: 480px; }
+    .demo-hints { max-width: 100%; padding-top: 0; }
+    section { padding: 72px 0; }
+  }
+
+  @media (max-width: 480px) {
+    .hero h1 { font-size: 28px; }
+    .hero-sub { font-size: 15px; }
+    .principle-grid { grid-template-columns: 1fr; }
+    .horizon-grid { grid-template-columns: 1fr; }
+    .vision-card { padding: 32px 28px; }
+    .demo-frame { height: 416px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── NAVIGATION ─────────────────────────────────────────── -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <span>&#x1F99E;</span> Lobster Watch
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#problems">Problem</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#design-vision">Design Vision</a></li>
+      <li><a href="#philosophy">Philosophy</a></li>
+      <li><a href="#horizon">Coming Soon</a></li>
+      <li><a href="#demo">Demo</a></li>
+      <li><a href="https://fancy-gelato-930cf5.netlify.app/" target="_blank" class="nav-cta">Try Demo</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f5e6c8" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ─── HERO ───────────────────────────────────────────────── -->
+<section class="hero">
+  <video class="hero-video" autoplay muted loop playsinline preload="metadata">
+    <source src="clawbg.mp4" type="video/mp4">
+  </video>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <img src="header-sign.png" alt="Lobster Watch" class="hero-sign">
+    <div class="hero-badge">Agent Oversight Dashboard</div>
+    <h1>Your AI Agent's<br>Harbor Master</h1>
+    <p class="hero-sub">
+      A calm, transparent dashboard that makes the invisible visible.
+      Know what your AI agent is doing, what it costs, and when it needs you.
+    </p>
+    <div class="hero-buttons">
+      <a href="https://fancy-gelato-930cf5.netlify.app/" target="_blank" class="btn btn-primary">Try the Demo</a>
+      <a href="#problems" class="btn btn-ghost">Learn More</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PROBLEM ────────────────────────────────────────────── -->
+<section class="problems" id="problems">
+  <div class="container">
+    <div class="problems-header">
+      <div class="section-label anim">The Unseen Risks</div>
+      <h2 class="section-title anim anim-delay-1">Why AI Agents Need Oversight</h2>
+      <p class="section-desc anim anim-delay-2">
+        Autonomous AI agents are powerful, but they create a fundamental tension:
+        users hand significant capabilities to something they can't see or easily control.
+      </p>
+    </div>
+    <div class="problem-grid">
+      <div class="problem-card anim" data-accent="coral">
+        <h3>&#x1F4B8; Cost Surprises</h3>
+        <p>No visibility into API spend until the bill arrives. Community reports range from $50/day to $3,600/month from misconfigured agents.</p>
+      </div>
+      <div class="problem-card anim anim-delay-1" data-accent="gray">
+        <h3>&#x1F50D; Behavior Opacity</h3>
+        <p>Your agent runs silently in the background. There's no way to know what it did, when, or why &mdash; until something goes wrong.</p>
+      </div>
+      <div class="problem-card anim anim-delay-2" data-accent="red">
+        <h3>&#x26A0;&#xFE0F; Security Blind Spots</h3>
+        <p>The "Lethal Trifecta": an agent that reads external content, executes commands, and persists memory is vulnerable to prompt injection attacks.</p>
+      </div>
+      <div class="problem-card anim anim-delay-3" data-accent="amber">
+        <h3>&#x1F6A6; No Human Gate</h3>
+        <p>Agents can send emails, delete files, and run shell commands with no confirmation step. One misconfigured skill could cause cascading harm.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── DESIGN VISION ─────────────────────────────────────────── -->
+<section class="design-vision vision-section" id="design-vision">
+  <div class="container">
+    <div class="design-vision-header">
+      <div class="section-label anim">Design Vision</div>
+      <h2 class="section-title anim anim-delay-1">Two Pillars of Calm Oversight</h2>
+      <p class="section-desc anim anim-delay-2">
+        The philosophy behind Lobster Watch's pixel-art harbor aesthetic.
+      </p>
+    </div>
+    <div class="vision-grid">
+      <div class="vision-card anim" data-accent="amber">
+        <div class="vision-card-icon"><span>&#x1F4F1;</span></div>
+        <h3>Pocket-Sized Peace of Mind</h3>
+        <p class="vision-card-hook">"AI oversight shouldn't happen at a desk. It should happen in the palm of your hand."</p>
+        <div class="vision-card-deep">
+          <button type="button" class="vision-toggle" aria-expanded="false"><span class="toggle-text">[+]</span> Read Designer's Log</button>
+          <div class="vision-card-deep-content">
+            <div class="vision-card-deep-content-inner">
+              <p>Most AI dashboards assume you are leaning into a monitor. But <span class="highlight">OpenClaw</span>'s strength is its autonomy—it works while you're away. Lobster Watch chooses a <span class="highlight">Mobile-first</span> path to turn monitoring into a 5-second glance. Whether you're commuting or grabbing coffee, you get instant certainty that your 'Lobster Boat' is sailing smoothly, without being tethered to a 27-inch display.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="vision-card anim anim-delay-1" data-accent="seafoam">
+        <div class="vision-card-icon"><span>&#x2693;</span></div>
+        <h3>The Harbor Metaphor</h3>
+        <p class="vision-card-hook">"Turning cold logs into a sense of companionship, like tending to a virtual pet."</p>
+        <div class="vision-card-deep">
+          <button type="button" class="vision-toggle" aria-expanded="false"><span class="toggle-text">[+]</span> Read Designer's Log</button>
+          <div class="vision-card-deep-content">
+            <div class="vision-card-deep-content-inner">
+              <p>We reject the 'Alert Red' anxiety of traditional B2B monitoring. By treating AI agents as boats and logs as the 'Daily Catch,' we apply <span class="highlight">Calm Technology</span> principles. Pixel art isn't just for nostalgia—it lowers information density and visual aggression. This approach replaces 'oversight anxiety' with a peaceful morning report, building a more human connection with your autonomous partners.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FEATURES ───────────────────────────────────────────── -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="features-header">
+      <div class="section-label anim">Five Harbors</div>
+      <h2 class="section-title anim anim-delay-1">Everything You Need to Stay in Control</h2>
+      <p class="section-desc anim anim-delay-2">
+        Lobster Watch translates raw agent activity into a human-readable, actionable interface
+        wrapped in a fishing village aesthetic that reduces cognitive anxiety.
+      </p>
+    </div>
+
+    <!-- Harbor -->
+    <div class="feature-row anim">
+      <div class="feature-visual">
+        <div class="mock-phone">
+          <div class="mock-phone-notch"></div>
+          <div class="mock-card">
+            <div class="mock-title">&#x1F3A3; Today's Catch</div>
+            <div class="mock-stat-row">
+              <div class="mock-stat" style="background:rgba(74,184,160,0.12);border-color:rgba(74,184,160,0.3);color:var(--seafoam)">8 tasks</div>
+              <div class="mock-stat" style="background:rgba(58,122,156,0.12);border-color:rgba(58,122,156,0.3);color:var(--ocean-light)">12 emails</div>
+              <div class="mock-stat" style="background:rgba(232,114,74,0.12);border-color:rgba(232,114,74,0.3);color:var(--coral)">$0.14</div>
+            </div>
+          </div>
+          <div class="mock-card">
+            <div class="mock-title">Agent Status</div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <div style="width:8px;height:8px;background:var(--seafoam);clip-path:var(--pixel-clip-sm);animation:pulse-dot 2s infinite"></div>
+              <span style="font-family:'Pixelify Sans',monospace;font-size:11px;color:var(--seafoam)">Active &mdash; idle</span>
+            </div>
+          </div>
+          <div class="mock-card">
+            <div class="mock-title">Monthly Cost</div>
+            <div class="mock-bar" style="background:rgba(232,114,74,0.15)">
+              <div class="mock-bar-fill" style="width:35%;background:var(--coral)"></div>
+            </div>
+            <div style="font-family:'Pixelify Sans',monospace;font-size:9px;color:var(--gray);margin-top:4px">$4.20 / $12.00</div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-text">
+        <div class="section-label" style="color:var(--ocean-light)">Harbor</div>
+        <h3>Your Daily Catch at a Glance</h3>
+        <p>The calm overview you see when you check back in. Tasks completed, emails handled, cost tracking, and your agent's status &mdash; all in one place. No digging through logs.</p>
+        <div class="feature-tags">
+          <span class="feature-tag tag-ocean">Daily Summary</span>
+          <span class="feature-tag tag-coral">Cost Tracking</span>
+          <span class="feature-tag tag-ocean">Agent Status</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approval Dock -->
+    <div class="feature-row reverse anim">
+      <div class="feature-visual">
+        <div class="mock-phone">
+          <div class="mock-phone-notch"></div>
+          <div class="mock-card">
+            <div class="mock-title">&#x2693; Approval Dock</div>
+            <div class="mock-approval-card">
+              <div class="mock-approval-header">&#x2709;&#xFE0F; Send Email</div>
+              <div class="mock-approval-body">To: alice@work.com<br>Subject: Weekly report summary</div>
+              <div class="mock-approval-actions">
+                <div class="mock-btn" style="background:var(--seafoam);color:#fff;border-color:rgba(74,184,160,0.5)">Approve</div>
+                <div class="mock-btn" style="background:transparent;color:var(--gray);border-color:rgba(138,154,170,0.3)">Edit</div>
+                <div class="mock-btn" style="background:transparent;color:var(--red);border-color:rgba(217,79,61,0.3)">Deny</div>
+              </div>
+            </div>
+            <div class="mock-approval-card" style="border-color:rgba(232,114,74,0.3);background:rgba(232,114,74,0.05)">
+              <div class="mock-approval-header" style="color:var(--coral)">&#x1F4B0; Budget Alert</div>
+              <div class="mock-approval-body">Daily budget of $0.50 reached. Current spend: $0.52</div>
+              <div class="mock-approval-actions">
+                <div class="mock-btn" style="background:var(--amber);color:#fff;border-color:rgba(240,168,48,0.5)">Resume</div>
+                <div class="mock-btn" style="background:transparent;color:var(--gray);border-color:rgba(138,154,170,0.3)">Pause</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-text">
+        <div class="section-label" style="color:var(--coral)">Approval Dock</div>
+        <h3>Human in the Loop</h3>
+        <p>High-stakes actions queue here for your review. Approve, edit, or deny emails, file deletions, and shell commands. Budget alerts pause the agent automatically and surface cost-saving options.</p>
+        <div class="feature-tags">
+          <span class="feature-tag tag-coral">Action Cards</span>
+          <span class="feature-tag tag-amber">Budget Controls</span>
+          <span class="feature-tag tag-coral">Consequence Preview</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Heartbeat -->
+    <div class="feature-row anim">
+      <div class="feature-visual">
+        <div class="mock-phone">
+          <div class="mock-phone-notch"></div>
+          <div class="mock-card">
+            <div class="mock-title">Heartbeat Log</div>
+            <div class="mock-timeline-row">
+              <div class="mock-timeline-dot" style="background:var(--gray)"></div>
+              <span>09:00 &mdash; Routine check</span>
+              <span style="margin-left:auto;color:var(--ocean-light)">$0.003</span>
+            </div>
+            <div class="mock-timeline-row">
+              <div class="mock-timeline-dot" style="background:var(--gray)"></div>
+              <span>09:30 &mdash; Routine check</span>
+              <span style="margin-left:auto;color:var(--ocean-light)">$0.003</span>
+            </div>
+            <div class="mock-timeline-row" style="background:rgba(240,168,48,0.08);padding:6px;margin:0 -14px;padding-left:14px;padding-right:14px">
+              <div class="mock-timeline-dot" style="background:var(--amber)"></div>
+              <span style="color:var(--amber)">10:00 &mdash; Email flagged</span>
+              <span style="margin-left:auto;color:var(--coral)">$0.08</span>
+            </div>
+            <div class="mock-timeline-row">
+              <div class="mock-timeline-dot" style="background:var(--gray)"></div>
+              <span>10:30 &mdash; Routine check</span>
+              <span style="margin-left:auto;color:var(--ocean-light)">$0.003</span>
+            </div>
+            <div class="mock-timeline-row" style="background:rgba(217,79,61,0.08);padding:6px;margin:0 -14px;padding-left:14px;padding-right:14px">
+              <div class="mock-timeline-dot" style="background:var(--red)"></div>
+              <span style="color:var(--red)">11:00 &mdash; Injection detected</span>
+              <span style="margin-left:auto;color:var(--red)">$0.12</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-text">
+        <div class="section-label" style="color:var(--coral)">Heartbeat Log</div>
+        <h3>Every Heartbeat, Filtered by What Matters</h3>
+        <p>Not a raw log &mdash; an attention filter. Normal cycles collapse to quiet ticks. Anomalies surface clearly with cost-per-cycle tracking. Intervene directly from any alert card.</p>
+        <div class="feature-tags">
+          <span class="feature-tag tag-coral">Attention Filter</span>
+          <span class="feature-tag tag-coral">Cost per Cycle</span>
+          <span class="feature-tag tag-amber">Interventions</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tools & Skills -->
+    <div class="feature-row reverse anim">
+      <div class="feature-visual">
+        <div class="mock-phone">
+          <div class="mock-phone-notch"></div>
+          <div class="mock-card" style="border-color:rgba(217,79,61,0.3);background:rgba(217,79,61,0.05)">
+            <div class="mock-title" style="color:var(--red)">&#x26A1; Lethal Trifecta Detected</div>
+            <div style="font-size:10px;color:var(--gray);line-height:1.4">
+              Your agent can read external content AND execute commands AND persist memory. This combination requires extra care.
+            </div>
+          </div>
+          <div class="mock-card">
+            <div class="mock-title">Tools & Skills</div>
+            <div class="mock-toggle-row">
+              <div class="mock-toggle-label">Email Send</div>
+              <div class="mock-toggle-badge" style="background:rgba(217,79,61,0.12);color:var(--red);border:1px solid rgba(217,79,61,0.3)">write</div>
+            </div>
+            <div class="mock-toggle-row">
+              <div class="mock-toggle-label">Shell Exec</div>
+              <div class="mock-toggle-badge" style="background:rgba(217,79,61,0.12);color:var(--red);border:1px solid rgba(217,79,61,0.3)">exec</div>
+            </div>
+            <div class="mock-toggle-row">
+              <div class="mock-toggle-label">Web Browse</div>
+              <div class="mock-toggle-badge" style="background:rgba(74,184,160,0.12);color:var(--seafoam);border:1px solid rgba(74,184,160,0.3)">read</div>
+            </div>
+            <div class="mock-toggle-row">
+              <div class="mock-toggle-label">Calendar</div>
+              <div class="mock-toggle-badge" style="background:rgba(240,168,48,0.12);color:var(--amber);border:1px solid rgba(240,168,48,0.3)">write</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-text">
+        <div class="section-label" style="color:var(--amber)">Tools & Skills</div>
+        <h3>Audit Every Capability</h3>
+        <p>See every tool your agent can use, color-coded by risk. Detect the Lethal Trifecta. Review community skills with permission tags, source trust labels, and one-tap disable.</p>
+        <div class="feature-tags">
+          <span class="feature-tag tag-amber">Risk Scoring</span>
+          <span class="feature-tag tag-coral">Lethal Trifecta</span>
+          <span class="feature-tag tag-amber">Skill Vetting</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Memory Cove -->
+    <div class="feature-row anim">
+      <div class="feature-visual">
+        <div class="mock-phone">
+          <div class="mock-phone-notch"></div>
+          <div class="mock-card">
+            <div class="mock-title">&#x1F4AC; Memory Cove</div>
+            <div class="mock-memory-item">
+              <div class="mock-memory-dot" style="background:var(--seafoam)"></div>
+              <div class="mock-memory-text">
+                <span style="color:var(--seafoam);font-family:'Pixelify Sans',monospace;font-size:9px">You added</span><br>
+                Prefers concise responses. Gets frustrated by long preambles.
+              </div>
+            </div>
+            <div class="mock-memory-item">
+              <div class="mock-memory-dot" style="background:var(--ocean-light)"></div>
+              <div class="mock-memory-text">
+                <span style="color:var(--ocean-light);font-family:'Pixelify Sans',monospace;font-size:9px">Agent learned</span><br>
+                Based in Seattle. Regularly explores local restaurants.
+              </div>
+            </div>
+            <div class="mock-memory-item">
+              <div class="mock-memory-dot" style="background:var(--seafoam)"></div>
+              <div class="mock-memory-text">
+                <span style="color:var(--seafoam);font-family:'Pixelify Sans',monospace;font-size:9px">Imported &mdash; ChatGPT</span><br>
+                Transitioning from landscape architecture to UX design.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-text">
+        <div class="section-label" style="color:var(--seafoam)">Memory Cove</div>
+        <h3>See What Your Agent Remembers</h3>
+        <p>Browse, search, add, and delete memories. Import knowledge from ChatGPT or Claude in one step. Every entry shows its source &mdash; no black boxes.</p>
+        <div class="feature-tags">
+          <span class="feature-tag tag-seafoam">Browse & Search</span>
+          <span class="feature-tag tag-seafoam">Import from AI</span>
+          <span class="feature-tag tag-seafoam">Source Labels</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── PHILOSOPHY ──────────────────────────────────────────── -->
+<section class="philosophy" id="philosophy">
+  <div class="container">
+    <div class="philosophy-header">
+      <div class="section-label anim">Design Philosophy</div>
+      <h2 class="section-title anim anim-delay-1">Built on Five Principles</h2>
+      <p class="section-desc anim anim-delay-2">
+        Inspired by Stardew Valley and calm technology &mdash; designed to reduce the cognitive anxiety of monitoring autonomous AI.
+      </p>
+    </div>
+    <div class="principle-grid">
+      <div class="principle-card anim">
+        <div class="principle-icon"><span>&#x1F3AF;</span></div>
+        <h4>Attention Filtering</h4>
+        <p>Surface what matters. Hide what doesn't. Normal activity fades; anomalies stand out.</p>
+      </div>
+      <div class="principle-card anim anim-delay-1">
+        <div class="principle-icon"><span>&#x1F91D;</span></div>
+        <h4>Human in the Loop</h4>
+        <p>High-stakes actions pause for approval. Powerful but not unchecked.</p>
+      </div>
+      <div class="principle-card anim anim-delay-2">
+        <div class="principle-icon"><span>&#x1F30A;</span></div>
+        <h4>Calm Technology</h4>
+        <p>Low cognitive load. Clear hierarchy. Satisfying micro-interactions.</p>
+      </div>
+      <div class="principle-card anim anim-delay-3">
+        <div class="principle-icon"><span>&#x1F50D;</span></div>
+        <h4>Transparency First</h4>
+        <p>Every action is traceable. Memory entries show their source. No black boxes.</p>
+      </div>
+      <div class="principle-card anim anim-delay-4">
+        <div class="principle-icon"><span>&#x2696;&#xFE0F;</span></div>
+        <h4>Consequence Transparency</h4>
+        <p>Before any intervention, see exactly what will happen. No action without a clear preview.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── THE HORIZON (Coming Soon) ───────────────────────────── -->
+<section class="horizon" id="horizon">
+  <div class="container">
+    <div class="horizon-header">
+      <div class="section-label anim">The Horizon</div>
+      <h2 class="section-title anim anim-delay-1">Coming Soon</h2>
+      <p class="section-desc anim anim-delay-2">
+        Features we're charting for the next voyage. Stay tuned, Captain.
+      </p>
+    </div>
+    <div class="horizon-grid">
+      <div class="horizon-card anim" data-accent="coral">
+        <h4>&#x1F4C5; Cronjob Navigator</h4>
+        <p>A visual calendar for scheduled tasks. When will it check emails next? When's the next heartbeat? See your agent's rhythm at a glance.</p>
+      </div>
+      <div class="horizon-card anim anim-delay-1" data-accent="amber">
+        <h4>&#x1F4CA; Token Economy</h4>
+        <p>Deep-dive analytics and charts for API spend per skill. Understand where every token goes and optimize your fleet's efficiency.</p>
+      </div>
+      <div class="horizon-card anim anim-delay-2" data-accent="seafoam">
+        <h4>&#x1F9EC; Soul Deep-Dive</h4>
+        <p>Personality anchor editing to fine-tune your agent's tone and values. Shape how your lobster thinks, speaks, and decides &mdash; without rewriting code.</p>
+      </div>
+      <div class="horizon-card anim anim-delay-3" data-accent="gray">
+        <h4>&#x1F514; Ambient Feedback</h4>
+        <p>Haptics and Dynamic Island (iOS) for low-friction notifications. Your agent whispers in your pocket &mdash; no jarring alerts, just gentle nudges.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── DEMO ───────────────────────────────────────────────── -->
+<section class="demo" id="demo">
+  <div class="container">
+    <div class="demo-header">
+      <div class="section-label anim">Interactive Prototype</div>
+      <h2 class="section-title anim anim-delay-1">Try It Yourself</h2>
+      <p class="section-desc anim anim-delay-2">
+        A fully interactive prototype. Tap through the five sections using the bottom navigation.
+      </p>
+    </div>
+    <div class="demo-wrapper anim">
+      <div class="demo-frame">
+        <iframe src="https://fancy-gelato-930cf5.netlify.app/" loading="lazy" title="Lobster Watch Demo"></iframe>
+      </div>
+      <div class="demo-hints">
+        <div class="demo-hint">
+          <div class="demo-hint-num">1</div>
+          <p>Start at <strong>Harbor</strong> &mdash; see your daily catch and agent status</p>
+        </div>
+        <div class="demo-hint">
+          <div class="demo-hint-num">2</div>
+          <p>Check the <strong>Dock</strong> &mdash; approve or deny pending actions</p>
+        </div>
+        <div class="demo-hint">
+          <div class="demo-hint-num">3</div>
+          <p>Browse <strong>Heartbeat</strong> &mdash; expand alerts and see cost spikes</p>
+        </div>
+        <div class="demo-hint">
+          <div class="demo-hint-num">4</div>
+          <p>Explore <strong>Skills</strong> &mdash; audit tools and detect the Lethal Trifecta</p>
+        </div>
+        <div class="demo-hint">
+          <div class="demo-hint-num">5</div>
+          <p>Visit <strong>Memory</strong> &mdash; see what the agent remembers and import from other AIs</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─────────────────────────────────────────────── -->
+<footer class="footer">
+  <div class="container">
+    <h2 class="anim">Ready to Watch Your Lobsters?</h2>
+    <p class="anim anim-delay-1">Sense. Understand. Audit. Intervene.</p>
+    <div class="footer-buttons anim anim-delay-2">
+      <a href="https://fancy-gelato-930cf5.netlify.app/" target="_blank" class="btn btn-primary">Launch Full Demo</a>
+    </div>
+    <div class="footer-divider"></div>
+    <div class="footer-game">
+      <span>&#x1F99E;</span> Lobster Watch &middot; &#x2693; Harbor Master Edition
+    </div>
+  </div>
+</footer>
+
+<script>
+// ─── Scroll animations ───────────────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.anim').forEach(el => observer.observe(el));
+
+// ─── Mobile nav toggle ──────────────────────────────────────
+document.getElementById('navToggle').addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+
+// Close mobile nav when clicking a link
+document.querySelectorAll('.nav-links a').forEach(link => {
+  link.addEventListener('click', () => {
+    document.getElementById('navLinks').classList.remove('open');
+  });
+});
+
+// ─── Design Vision card expand/collapse ───────────────────────
+document.querySelectorAll('.vision-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const deep = btn.closest('.vision-card-deep');
+    const expanded = deep.classList.toggle('expanded');
+    btn.setAttribute('aria-expanded', expanded);
+    btn.querySelector('.toggle-text').textContent = expanded ? '[−]' : '[+]';
+  });
+});
+
+// ─── Retro noise texture ────────────────────────────────────
+const _noiseCanvas = document.createElement('canvas');
+_noiseCanvas.width = 128;
+_noiseCanvas.height = 128;
+const _noiseCtx = _noiseCanvas.getContext('2d');
+const _noiseData = _noiseCtx.createImageData(128, 128);
+for (let i = 0; i < _noiseData.data.length; i += 4) {
+  const v = Math.random() * 255;
+  _noiseData.data[i] = v;
+  _noiseData.data[i + 1] = v;
+  _noiseData.data[i + 2] = v;
+  _noiseData.data[i + 3] = 14;
+}
+_noiseCtx.putImageData(_noiseData, 0, 0);
+const NOISE_URL = _noiseCanvas.toDataURL('image/png');
+
+document.querySelectorAll('.problems, .demo, .hero, .vision-section, .philosophy, .horizon').forEach(el => {
+  const bg = getComputedStyle(el).backgroundColor;
+  el.style.backgroundImage = `url("${NOISE_URL}")`;
+  el.style.backgroundRepeat = 'repeat';
+  el.style.backgroundSize = '128px 128px';
+  el.style.backgroundColor = bg;
+});
+document.querySelectorAll('.vision-card').forEach(el => {
+  el.style.backgroundImage = `url("${NOISE_URL}"), linear-gradient(180deg, #1a2a35 0%, #15202a 100%)`;
+  el.style.backgroundRepeat = 'repeat, no-repeat';
+  el.style.backgroundSize = '128px 128px, 100% 100%';
+});
+document.querySelectorAll('.principle-card').forEach(el => {
+  el.style.backgroundImage = `url("${NOISE_URL}"), linear-gradient(180deg, #1a2a35 0%, #15202a 100%)`;
+  el.style.backgroundRepeat = 'repeat, no-repeat';
+  el.style.backgroundSize = '128px 128px, 100% 100%';
+});
+
+// ─── Animate mock bars on scroll ────────────────────────────
+const barObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('.mock-bar-fill').forEach(bar => {
+        const w = bar.style.width;
+        bar.style.width = '0%';
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            bar.style.width = w;
+          });
+        });
+      });
+      barObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.mock-phone').forEach(el => barObserver.observe(el));
+</script>
+
+</body>
+</html>

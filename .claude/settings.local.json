@@ -1,22 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx:*)",
-      "Bash(node --version:*)",
-      "mcp__Claude_Preview__preview_start",
-      "Bash(ipconfig getifaddr:*)",
-      "WebFetch(domain:github.com)",
-      "WebFetch(domain:openclaw.ai)",
-      "WebFetch(domain:docs.openclaw.ai)",
-      "WebFetch(domain:deepwiki.com)",
-      "WebFetch(domain:fancy-gelato-930cf5.netlify.app)",
-      "WebFetch(domain:dev.to)",
-      "Bash(npm install:*)",
-      "Bash(ls /Users/xiaoyanghu/Downloads/lobster-watch && git -C /Users/xiaoyanghu/Downloads/lobster-watch status 2>&1)",
-      "Bash(gh auth:*)",
-      "Bash(brew install:*)",
-      "Bash(export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\" && gh auth status 2>&1)",
-      "Bash(git init:*)"
+      "Bash(cp -r /Users/xiaoyanghu/Downloads/lobster-watch-landing /Users/xiaoyanghu/Downloads/lobster-watch/lobster-watch-landing && echo \"done\")",
+      "Bash(git add:*)"
     ]
   }
 }

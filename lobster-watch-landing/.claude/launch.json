@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "landing",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8090", "-d", "/Users/xiaoyanghu/Downloads/lobster-watch-landing"],
+      "port": 8090
+    }
+  ]
+}
